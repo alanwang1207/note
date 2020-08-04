@@ -2,25 +2,25 @@
 
 關聯式資料庫邏輯結構
 
-## Foreign Key，FK
+### Foreign Key，FK
 必要時，以某個欄位為外鍵（Foreign Key，FK）關聯到另一資料表的主鍵以獲得進一步的相關資料
-## Primary Key，PK
+### Primary Key，PK
 每個資料表都各有其主鍵
 
 橫列稱為記錄（Record）
 
 直欄稱為欄位（Field）
-## SELECT 敘述基本語法
-* <select_list>: 以逗號條列各個欄位
+### SELECT 敘述基本語法
 * USE 資料庫名稱
 * SELECT 表示要顯示的欄位
+* <select_list>: 以逗號條列各個欄位
 * FROM 指定資料表名稱
 * WHERE 指定篩選欄位
 * ORDER BY 指定排序欄位
 
 
 
-## ex:指定欄位清單
+#### ex:指定欄位清單
 ```
 USE northwind;
 SELECT employeeid, lastname,
@@ -28,7 +28,7 @@ firstname, title
 FROM employees;
 
 ```
-## ex:資料排序
+#### ex:資料排序
 ```
 USE northwind;
 SELECT productid, productname,
@@ -39,13 +39,13 @@ ORDER BY categoryid, unitprice DESC;
 --DESC代表由大排到小
 ```
 
-## 篩選資料WHERE句型
+### 篩選資料WHERE句型
 
-### 比較型
+#### 比較型
 
 WHERE 欄位名稱 = 值 or '名'
 
-### 樣式比對型
+#### 樣式比對型
 
 WHERE 比較名稱 LIKE 'a%'
 
@@ -62,17 +62,17 @@ _可限制字的長度_可代表一個中文字元
 ex:'_a' 兩位且以a結尾
 ```     
 
-### 可運用邏輯運算元
+#### 可運用邏輯運算元
 
 ```
 USE northwind;
 SELECT productid, productname, supplierid, unitprice
-FROM  productsWHERE
-(productname LIKE 'T%' OR productid = 46) 
+FROM  products
+WHERE(productname LIKE 'T%' OR productid = 46) 
 AND(unitprice > 16.00) ;
 ```
 
-### 區間型
+#### 區間型
 
 WHERE 欄位名稱 BETWEEN 10 AND 20;
 
@@ -82,8 +82,16 @@ WHERE unitprice BETWEEN 10 AND 20;
 
 --介於10至20之間
 ```
+日期查詢也可用區間型
+```
+mysql> 
+SELECT * 
+FROM table 
+WHERE date 
+BETWEEN '2018-05-10' AND '2018-08-20';
+```
 
-### 列舉型
+#### 列舉型
 
 WHERE 欄位名稱 IN (欄位值);
 
@@ -231,9 +239,13 @@ WHERE SupplierID in
 FROM Suppliers 
 WHERE Country = 'USA')
 
-這裡使用FK(supplierID)來幫助查詢(用Ｂ表幫Ａ表做事)
+這裡使用FK(supplierID)來幫助查詢(用B表幫A表做事)
 
 使用in,select只能一個欄位
+
+<br>
+
+* 查詢的本身可作為（相同環境下）子查詢的條件
 
 ```
 SELECT categoryID, p.categoryID,
@@ -244,11 +256,19 @@ WHERE categoryID = p.categoryID)
 AS DiffPrice 
 FROM products AS p
 ```
-上述先把針對products的子查詢結果視同一個名為p的資料表，
-接著計算出DiffPrice(子查詢)，最後列出須要顯示的項目
+上述先把針對products的查詢結果視同一個名為p的資料表，
+接著計算出DiffPrice(子查詢)，最後列出要顯示的項目
 :::info
 p.categoryID 是為了證明與categoryID相同
 :::
+<br>
+
+* 將子查詢的結果視同為一個資料表
+```
+select * FROM (SELECT OrderID, OrderDate 
+FROM Orders ORDER BY OrderDate DESC limit 10) AS T
+ORDER BY OrderDate ASC
+```
 
 ### 彙總函數
 
@@ -270,13 +290,52 @@ ex:avg(欄位名稱)
 ### COUNT與Null 值
 * 絕大多數的彙總函數均排除Null，不列入計算
 * COUNT(*) 例外，有Null 值的資料仍然計入一筆
+```
+ex:SELECT COUNT (欄位名稱) FROM 資料表名稱;
+```
+
+
+### 使用GROUP BY子句
+
+* 搭配AVG()、COUNT()、MAX()、MIN()、SUM() 等聚合函數使用，用來將查詢結果中特定欄位值相同的資料分為若干個群組，而每一個群組都會傳回一個資料列。
+```
+SELECT column_name(s), aggregate_function(column_name)
+FROM table_name
+GROUP BY column_name1, column_name2...;
+```
+* 使用HAVING篩選結果集的資料列(放在GROUP BY後)
+```
+SELECT categoryid, AVG(UnitPrice) 
+FROM products 
+GROUP BY CategoryID HAVING AVG(UnitPrice) >= 30
+```
+1. 沒有GROUP BY的時候，通常使用WHERE而不使用HAVING
+2. 含有HAVING子句的SQL並不一定要包含GROUP BY
+3. WHERE置於GROUP BY前面，只有符合WHERE子句條件的資料列才會被分組
+
+<br>
+
+* GROUP BY 後可以跟WITH ROLLUP，表示在進行分組統計的基礎上再次進行彙總統計（在每個分組下都會有統計彙總）：
+```
+SELECT orderid,productID,SUM(quantity) 
+FROM `order details`
+GROUP BY orderid,ProductID 
+WITH ROLLUP
+```
+:::info
+沒有在GROUP BY後,且無經過彙整函數的欄位名稱無法寫在SELECT後方
+:::
+
+ex:SELECT categoryID, ~~productID~~, AVG(UnitPrice)
+
+FROM products
+
+GROUP BY categoryID
 
 
 
 
-
-
-
+[SQL中ORDER BY和GROUP BY的區別](https://www.cnblogs.com/klb561/p/11657962.html)
 
 ### JOIN 結合多個資料表
 語法：
@@ -284,192 +343,70 @@ ex:avg(欄位名稱)
 * 再以ON 指定結合條件（通常利用主鍵與外鍵欄位指定ON 條件）
 * 欄位名稱重複時，須加註資料表名稱（或別名）
 * OUTER為以外的意思 ex. LEFT OUTER 表示左邊以外
-```
-mysql> 
-SELECT A.id,A.name,B.name 
-FROM A,B 
-WHERE A.id=B.id;
----- ----------- ------------- 
-| id | name       | nam        |
----- ----------- ------------- 
-|  1 | Pirate     | Rutabaga   |
-|  2 | Monkey     | Pirate     |
-|  3 | Ninja      | Darth Vader|
-|  4 | Spaghetti  | Ninja      |
----- ----------- ------------- 
-4 rows in set (0.00 sec)
-```
-JOIN 按照功能大致分為如下三類：
+* 若用OUTER JOIN，以小的去比對大的較有效率
+
+[JOIN範例](https://justcode.ikeepstudying.com/2016/08/mysql-%E5%9B%BE%E8%A7%A3-inner-join%E3%80%81left-join%E3%80%81right-join%E3%80%81full-outer-join%E3%80%81union%E3%80%81union-all%E7%9A%84%E5%8C%BA%E5%88%AB/)
 
 
+ex:[老師範例](https://docs.google.com/spreadsheets/d/1YUNZHCl3sY8iTLd80ecNs7DgQ-8nA6xWCI7CLRzmE4U/edit?usp=sharing)
 
-### Inner join
-內連線，也叫等值連線，inner join產生同時符合A和B的一組資料。
-```
-mysql> 
-SELECT * 
-FROM A inner join B on A.name = B.name;
----- -------- ---- -------- 
-| id | name   | id | name   |
----- -------- ---- -------- 
-|  1 | Pirate |  2 | Pirate |
-|  3 | Ninja  |  4 | Ninja  |
----- -------- ---- -------- 
-```
 
-### Left join
-left join,（或left outer join:在Mysql中兩者等價，推薦使用left join.）左連線從左表(A)產生一套完整的記錄,與匹配的記錄(右表(B)) .如果沒有匹配,右側將包含null。
-```
-mysql> 
-SELECT * 
-FROM A left join B on A.name = B.name;
-#或者：
-SELECT * 
-FROM A left outer join B on A.name = B.name;
----- ----------- ------ -------- 
-| id | name      | id   | name   |
----- ----------- ------ -------- 
-|  1 | Pirate    |    2 | Pirate |
-|  2 | Monkey    | NULL | NULL   |
-|  3 | Ninja     |    4 | Ninja  |
-|  4 | Spaghetti | NULL | NULL   |
----- ----------- ------ -------- 
-4 rows in set (0.00 sec)
-```
+### UNION
 
-如果想只從左表(A)中產生一套記錄，但不包含右表(B)的記錄，可以通過設定where語句來執行，如下：
-```
-mysql> 
-SELECT * 
-FROM A left join B on A.name=B.name 
-WHERE A.id is NULL or B.id is NULL;
----- ----------- ------ ------ 
-| id | name      | id   | name |
----- ----------- ------ ------ 
-|  2 | Monkey    | NULL | NULL |
-|  4 | Spaghetti | NULL | NULL |
----- ----------- ------ ------ 
-2 rows in set (0.00 sec)
-```
+UNION用於合併兩個或多個SELECT語句的結果，要求必須有相同數量的列、相似的數據類型，列的順序必須相同
 
-同理，還可以模擬inner join. 如下：
+SELECT 列 FROM 表1
 
-```
-mysql> 
-SELECT * 
-FROM A left join B on A.name=B.name 
-WHERE A.id is not NULL and B.id is not NULL;
----- -------- ------ -------- 
-| id | name   | id   | name   |
----- -------- ------ -------- 
-|  1 | Pirate |    2 | Pirate |
-|  3 | Ninja  |    4 | Ninja  |
----- -------- ------ -------- 
-2 rows in set (0.00 sec)
-```
+UNION
 
-### 求差集：
-
-```
-SELECT * 
-FROM A LEFT JOIN B ON A.name = B.name
-WHERE B.id IS NULL union
-SELECT * 
-FROM A right JOIN B ON A.name = B.name
-WHERE A.id IS NULL;
-
------- ----------- ------ ------------- 
-| id   | name      | id   | name        |
------- ----------- ------ ------------- 
-|    2 | Monkey    | NULL | NULL        |
-|    4 | Spaghetti | NULL | NULL        |
-| NULL | NULL      |    1 | Rutabaga    |
-| NULL | NULL      |    3 | Darth Vader |
------- ----------- ------ ------------- 
-```
-
-### Right join
-
-```
-mysql> 
-SELECT * 
-FROM A right join B on A.name = B.name;
------- -------- ---- ------------- 
-| id   | name   | id | name        |
------- -------- ---- ------------- 
-| NULL | NULL   |  1 | Rutabaga    |
-|    1 | Pirate |  2 | Pirate      |
-| NULL | NULL   |  3 | Darth Vader |
-|    3 | Ninja  |  4 | Ninja       |
------- -------- ---- ------------- 
-4 rows in set (0.00 sec)
-```
-同left join。
-
-### Cross join
-交叉連線，得到的結果是兩個表的乘積，即笛卡爾積
-```
-mysql> 
-SELECT * 
-FROM A cross join B;
----- ----------- ---- ------------- 
-| id | name      | id | name        |
----- ----------- ---- ------------- 
-|  1 | Pirate    |  1 | Rutabaga    |
-|  2 | Monkey    |  1 | Rutabaga    |
-|  3 | Ninja     |  1 | Rutabaga    |
-|  4 | Spaghetti |  1 | Rutabaga    |
-|  1 | Pirate    |  2 | Pirate      |
-|  2 | Monkey    |  2 | Pirate      |
-|  3 | Ninja     |  2 | Pirate      |
-|  4 | Spaghetti |  2 | Pirate      |
-|  1 | Pirate    |  3 | Darth Vader |
-|  2 | Monkey    |  3 | Darth Vader |
-|  3 | Ninja     |  3 | Darth Vader |
-|  4 | Spaghetti |  3 | Darth Vader |
-|  1 | Pirate    |  4 | Ninja       |
-|  2 | Monkey    |  4 | Ninja       |
-|  3 | Ninja     |  4 | Ninja       |
-|  4 | Spaghetti |  4 | Ninja       |
----- ----------- ---- ------------- 
-16 rows in set (0.00 sec)
-```
-實際上，在 MySQL 中（僅限於 MySQL） CROSS JOIN 與 INNER JOIN 的效果是一樣的，在不指定 ON 條件得到的結果都是笛卡爾積，反之取得兩個表完全匹配的結果。
-INNER JOIN 與 CROSS JOIN 可以省略 INNER 或 CROSS 關鍵字，因此下面的 SQL 效果是一樣的：
-```
-... FROM table1 INNER JOIN table2
-... FROM table1 CROSS JOIN table2
-... FROM table1 JOIN table2
-```
-
-### Full join
-全連線產生的所有記錄（雙方匹配記錄）在表A和表B。如果沒有匹配,則對面將包含null。
-```
-mysql> 
-SELECT * 
-FROM A left join B on B.name = A.name 
--> union 
--> SELECT * 
-FROM A right join B on B.name = A.name;
------- ----------- ------ ------------- 
-| id   | name      | id   | name        |
------- ----------- ------ ------------- 
-|    1 | Pirate    |    2 | Pirate      |
-|    2 | Monkey    | NULL | NULL        |
-|    3 | Ninja     |    4 | Ninja       |
-|    4 | Spaghetti | NULL | NULL        |
-| NULL | NULL      |    1 | Rutabaga    |
-| NULL | NULL      |    3 | Darth Vader |
------- ----------- ------ ------------- 
-6 rows in set (0.00 sec)
-```
+SELECT 列 FROM 表2
 
 :::info
-注意：mysql不支援Full join,不過可以通過UNION 關鍵字來合併 LEFT JOIN 與 RIGHT JOIN來模擬FULL join.
+注意：UNION默認選取不同值，允許重複則使用UNION ALL（合集）
+INTERSECT（交集）
+EXCEPT（差集）
 :::
 
-50題 練習題１
-https://kknews.cc/zh-tw/code/5nny5b2.html
 
-50題 練習題２
-https://blog.csdn.net/flycat296/article/details/63681089
+[50題 練習題１](https://kknews.cc/zh-tw/code/5nny5b2.html)
+
+[50題 練習題２](https://blog.csdn.net/flycat296/article/details/63681089)
+
+[SQL筆記](https://github.com/littlefis/SQLNote/blob/master/SQL.md)
+
+[SQL筆記](https://github.com/bfsz/SQLNote)
+
+
+
+### INSERT
+* 插入
+
+INSET INTO 表 VALUES （值，值）
+
+INSERT INTO 表 （列，列） VALUES （值，值）
+### UPDATE
+* 修改
+
+UPDATE 表 SET 列 = 新值 WHERE 條件
+
+eg：UPDATE Person SET Address = '張三' , City = '台北'
+
+### DELETE
+* 删除行
+
+DELETE FROM 表 WHERE 列 = 值
+
+DELETE FROM 表 或 DELETE * FROM 表可以删除所有行
+
+DELETE FROM 沒寫 WHERE條件，有機會刪除整份資料表內容（視有無其他相關的關聯）
+
+### TRUNCATE TABLE
+* 清空資料表內容並**保留結構**
+* 無法ROLLBACK
+
+
+TRUNCATE TABLE 表
+
+
+
+[資料庫正規化](https://hackmd.io/z5ppRNYJS5WAo1HYx6pDzw?view)
