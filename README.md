@@ -87,7 +87,7 @@ WHERE unitprice BETWEEN 10 AND 20;
 
 ```sql
 SELECT * 
-FROM table 
+FROM 表單名稱
 WHERE date 
 BETWEEN '2018-05-10' AND '2018-08-20';
 ```
@@ -341,11 +341,18 @@ GROUP BY categoryID
 
 ### JOIN 結合多個資料表
 語法：
+```sql
+SELECT column1, column2
+FROM tableA A   // = as A
+JOIN tableB B 
+ON A.columnName = B.columnName 或 USING (columnName)
+```
 * 以JOIN 註明另一個資料表
 * 再以ON 指定結合條件（通常利用主鍵與外鍵欄位指定ON 條件）
 * 欄位名稱重複時，須加註資料表名稱（或別名）
 * OUTER為以外的意思 ex. LEFT OUTER 表示左邊以外
 * 若用OUTER JOIN，以小的去比對大的較有效率
+
 
 [JOIN範例](https://justcode.ikeepstudying.com/2016/08/mysql-%E5%9B%BE%E8%A7%A3-inner-join%E3%80%81left-join%E3%80%81right-join%E3%80%81full-outer-join%E3%80%81union%E3%80%81union-all%E7%9A%84%E5%8C%BA%E5%88%AB/)
 
@@ -372,9 +379,9 @@ INTERSECT（交集）
 EXCEPT（差集）
 :::
 
+### 資料操作（DML）
 
-
-### INSERT
+#### INSERT
 * 插入
 
 ```sql
@@ -382,16 +389,16 @@ INSERT INTO 表 VALUES （值，值）
 
 INSERT INTO 表 （列，列） VALUES （值，值）
 ```
-### UPDATE
+#### UPDATE
 * 修改
 
 ```sql
 UPDATE 表 SET 列 = 新值 WHERE 條件
 
-eg：UPDATE Person SET Address = '張三' , City = '台北'
+ex：UPDATE Person SET Address = '張三' , City = '台北' WHERE T_id = 3
 ```
 
-### DELETE
+#### DELETE
 * 删除行
 
 ```sql
@@ -402,7 +409,7 @@ DELETE FROM 表 或 DELETE * FROM 表可以删除所有行
 DELETE FROM 沒寫 WHERE條件，有機會刪除整份資料表內容（視有無其他相關的關聯）
 ```
 
-### TRUNCATE TABLE
+#### TRUNCATE TABLE
 * 清空資料表內容並**保留結構**
 * 無法ROLLBACK
 
@@ -411,27 +418,12 @@ TRUNCATE TABLE
 ```
 
 
-[資料庫正規化](https://hackmd.io/z5ppRNYJS5WAo1HYx6pDzw?view)
-
-
-![正規化練習](https://i.imgur.com/r4U4xaU.png)
-
-* Timesheet(考勤單)要多 所以要取得Invoice(發票)ID，必須把       Invoice的Timesheetid刪掉
-* Employee Address1 Address2 違反第一正規化
-* Employee ZIP 違反正規化
-* 地址在資料庫寫法必須分開為城市 路 巷等等才不違反規定
-* Vehicle的EmplyeeID應該與VehicleID形成一個新表
-* EmployeeType與Employee應該是1->多
-* Salary不屬於Employee
-* 因為Timesheet中有ClientID所以Client對TimeSheet應該要有一條   1->多
-
-
-修改版
-![正規化練習](https://i.imgur.com//qhDP6hL.jpg)
 
 <br>
 
-### 建立資料庫
+### 資料定義
+
+#### 建立資料庫
 ```sql
 CREATE DATABASE [IF NOT EXISTS]名稱
 [DEFAULT]CHARACTER SET utf8(字元編碼);
@@ -439,19 +431,26 @@ CREATE DATABASE [IF NOT EXISTS]名稱
 [IF NOT EXISTS] 表示不存在才會創建。建議在sql腳本中使用create命令創建數據庫時加入此項，以免對應名稱的數據庫已經存在導致sql腳本終止，為可選項
 
 [DEFAULT]如果使用了default，這個數據庫中創建的所有資料表默認都會繼承這個數據庫的字符集，為可選項。
-### 刪除資料庫
+#### 刪除資料庫
 ```sql
 drop database 資料庫名稱
 ```
-### 建立資料表
+#### 建立資料表
 ```sql
 CREATE [TEMPORARY] TABLE 名稱 (欄位名稱,欄位型態,欄位選項)
 ```
-
 [TEMPORARY]（暫時的資料表）會在連線之後就消失，為可選項。
 
+#### 刪除資料表
+```sql
+drop table 資料表名稱
+```
+
 [MYSQL建立資料表](https://blog.xuite.net/hsiung03/blog/64202615-MYSQL+%E5%BB%BA%E7%AB%8B%E8%B3%87%E6%96%99%E8%A1%A8)
-### 修改資料表
+
+<br>
+
+#### 修改資料表結構
 * 加入新的欄位
 ```sql
 alter table 資料表名稱
@@ -479,23 +478,182 @@ insert into t1 (id, data) values (1,100)
 alter table t1 add tempID int auto_increment primary key;
 update t1 set id =3 where tempID = 3;
 ```
-建立主鍵編號後再修改即可
+建立主鍵編號後即可修改資料
 
 <br>
-### 刪除資料表
-```sql
-drop table 資料表名稱
-```
+
+
+
+### 資料庫正規化
+
+[資料庫正規化](https://hackmd.io/@alanwang1207/dbnorm)
+ < 挪過去了
+
+<br>
 
 ### 索引
 以空間換取時間加快查詢速度，不建議用於有頻繁更新或插入操作的資料表。
-* 建立索引
+#### 建立索引
 ```sql
 CREATE INDEX 索引名 ON 表格名 (欄位名,...);
 ```
+#### 查詢索引
+```sql
+SELECT * FROM information_schema.statistics 
+where table_schema = '資料庫名';
+```
+```sql
+SHOW INDEX FROM 表格名;
+```
+#### 刪除索引
+```sql
+DROP INDEX 索引名 ON 表格名; 
+```
 [索引的設計](https://ithelp.ithome.com.tw/articles/10221971)
+
+[索引簡介](https://medium.com/@michael80402/mysql%E7%B4%A2%E5%BC%95-e002f707a5f4)
+
+
+#### 索引練習測試
+
+新增
+```sql
+CREATE INDEX idx_name ON customers(customerid) 
+```
+刪除
+```sql
+DROP INDEX idx_name ON customers
+```
+查詢
+```sql
+SELECT * FROM information_schema.statistics 
+where table_schema = 'northwind'
+```
+測試用的 join-index
+```sql=1
+select c.customerid,companyname,o.orderid,p.productID,ProductName
+
+
+from customers c join orders o on o.customerid =c.customerid
+                 join `order details` od on od.orderid =o.orderid
+                 join products p on p.ProductID = od.productID
+order by c.customerid,p.productID
+```
+```sql
+create index idx_Products_ProductID on Products(ProductID);
+create index idx_OrderDetails_ProductID on `Order Details`(ProductID);
+```
     
 <br>
+
+### 條件約束
+#### check
+Mysql version > 8.0 (教室5.7 爛！！！)
+
+```sql
+alter TABLE 資料表名稱 
+add CONSTRAINT 約束名 check (條件)
+
+資料在約束後 add 跟 update 都會被限制
+```
+
+#### indexs
+欄位值不得重複：
+```sql
+create unique index idx_company on customer(companyName)
+```
+#### foreign key
+```
+| customer:                | orders:
++------------+-------------+---------+------------+
+| customerId | companyName | orderId | customerId |
++------------+-------------+---------+------------+
+|          1 | A           |       1 |          2 |
+|          2 | B           |       2 |          1 |
++------------+-------------+---------+------------+
+```
+```sql
+alter table orders 
+add constraint fk_customer_orders
+foreign key (customerId) references customer(customerId)
+
+on update cascade
+on delete cascade
+```
+:::info
+  on update/delete cascade
+ 
+ 可加可不加,加入後如果修改外鍵就會跟著修改,如果沒加,則完全不更動
+:::
+
+### SHOW
+
+#### 終端機登入路徑
+```shell
+/Applications/MAMP/Library/bin/mysql -uroot -p
+```
+密碼：root
+
+#### 顯示資料夾路徑
+```sql
+SHOW VARIABLES LIKE 'data%';
+```
+#### 顯示編碼種類
+```sql
+SHOW VARIABLES LIKE 'char%';
+```
+#### 顯示資料庫、資料表
+```sql
+SHOW DATABASES ;
+USE database_name ;
+SHOW TABLES ; 
+DESCRIBE table_name ;
+```
+#### 資料夾路徑
+```shell
+/Applications/MAMP/db/mysql57/
+```
+### UTF8 與 BIG5轉換
+![](https://i.imgur.com/NnA65Vd.png)
+
+#### 設定位元組
+```sql
+SET NAMES big5 ;
+```
+<br>
+
+### 使用者權限
+
+#### 授與一個新的使用者
+```sql
+grant usage on *.* to 使用者名稱@'IP位址' identified by '密碼';
+```
+
+#### 新增一個新的使用者
+```sql
+create user 使用者名稱 identified by '密碼';
+```
+#### 授與/移除使用者使用資料庫權限
+```sql
+grant SELECT on 資料庫名稱.資料表名稱 to 使用者名稱
+
+revoke SELECT on 資料庫名稱.資料表名稱 from 使用者名稱
+
+可以選擇授與 SELECT or UPDATE
+```
+
+
+-- 請試著描述 user, db, tables_priv 等資料表的作用？
+
+user ：查看使用者資料，紀錄使用者權限
+
+db ：各個使用者對每個資料庫的權限
+
+table_priv ：紀錄使用者對特定表內操作的權限
+
+<br>
+
+*user表中的密碼欄位-> authentication_string
 
 ### 參考資料
 [50題 練習題１](https://kknews.cc/zh-tw/code/5nny5b2.html)
@@ -513,4 +671,4 @@ CREATE INDEX 索引名 ON 表格名 (欄位名,...);
 [repo](https://github.com/alanwang1207/note)
 
 [MD語法](https://hackmd.io/@emisjerry/ByMQ0rWIB?type=slide#/)
-
+    
