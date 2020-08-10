@@ -186,7 +186,11 @@ ex:一頁十筆資料,列出第三頁的十筆資料
 ```sql
 ORDER BY 欄位名稱  LIMIT 20,10
 ```
-
+刪除更新某幾筆 排序
+```sql
+update limit ORDER BY 
+delete limit ORDER BY 
+```
 
 limit N :返回N條記錄
 
@@ -326,13 +330,13 @@ WITH ROLLUP
 沒有在GROUP BY後,且無經過彙整函數的欄位名稱無法寫在SELECT後方
 :::
 
-```sql
+
 ex:SELECT categoryID, ~~productID~~, AVG(UnitPrice)
 
 FROM products
 
 GROUP BY categoryID
-```
+
 
 
 
@@ -454,12 +458,17 @@ drop table 資料表名稱
 * 加入新的欄位
 ```sql
 alter table 資料表名稱
-add 新欄位
+add 新欄位 欄位屬性
 ```
 * 變更欄位定義
 ```sql
 alter table 資料表名稱
 modify 欄位名稱 欄位屬性 (default 預設值)
+```
+but測試結果是：
+```sql
+alter table 資料表名稱 
+alter 欄位名稱 set default 預設值;
 ```
 :::info
 如果修改屬性，原本有預設也要一起設定，否則會消失
@@ -562,7 +571,12 @@ add CONSTRAINT 約束名 check (條件)
 ```sql
 create unique index idx_company on customer(companyName)
 ```
-#### foreign key
+#### 
+
+
+
+
+key
 ```
 | customer:                | orders:
 +------------+-------------+---------+------------+
@@ -639,7 +653,7 @@ grant SELECT on 資料庫名稱.資料表名稱 to 使用者名稱
 
 revoke SELECT on 資料庫名稱.資料表名稱 from 使用者名稱
 
-可以選擇授與 SELECT or UPDATE
+可以選擇授與 USAGE / SELECT / UPDATE ...
 ```
 
 
@@ -653,8 +667,158 @@ table_priv ：紀錄使用者對特定表內操作的權限
 
 <br>
 
-*user表中的密碼欄位-> authentication_string
 
+
+* user表中的密碼欄位-> authentication_string
+
+#### sql_mode
+
+* 空字串：會保留 超過長度會被截掉 四捨五入
+
+* 傳統模式：超過長度(不符合預設格式)會報錯 無法輸入成功 空白會保留 中文輸入長度
+
+* Both：四捨五入
+
+手動加入時間
+```sql
+insert into 資料表名稱 (data) values (current_date()); 
+```
+自動輸入系統時間
+```sql
+insert into 資料表名稱 (data) values(current_timestamp()); 
+```
+
+
+空字串下的日期模式
+```sql
+insert into 資料表名稱 (data) values ('2006-00-31');
+```
+==00-31==表月底 可以正常顯示
+
+其餘不符合格式 將顯示 0000-00-00 00:00:00
+
+傳統模式中都直接報錯
+
+### enum
+```sql
+data enum('Y', 'N') not null default 'Y',
+```
+預設第一個為1(Y),第二個為2(N)以此類推
+，錯誤會存為０
+
+### set
+MySQL獨有的功能（？）
+one-hot是個不錯的替代方案
+```sql
+data set('reading', 'music', 'sport')
+
+select * from Lab 
+where find_in_set('music', data)
+```
+
+
+### lock
+
+鎖住之後在解鎖之前只能閱讀
+```sql
+lock tables 資料表名稱 read;
+```
+
+鎖住之後再解鎖之前啥都不能幹
+```sql
+lock tables 資料表名稱 write;
+```
+解鎖
+```sql
+unlock tables;
+```
+:::info
+如果有超過一個人使用lock以先進先出原則
+
+但是如果同時有read跟write，則先執行write 
+:::
+
+### transaction
+
+如果沒開始 新增刪除更改為autocommit
+
+```sql
+start transaction;
+```
+確認剛剛的修正
+```sql
+commit;
+```
+返回（斷線也算返回）
+```sql
+rollback;
+```
+### read commited
+A 交易更新並確認資料前，其他交易不能讀取該資料
+
+![](https://i.imgur.com/O5Zeyfy.png)
+
+### repeatable read
+永遠看到同時間的數據直到結束transaction，讀取中資料會被鎖定，確保同一筆交易中的讀取資料必須相同
+```sql
+set session transaction isolation level repeatable read;
+```
+![](https://i.imgur.com/LBC9Ful.png)
+
+* lock in share mode
+共享鎖：
+其他session可以讀取資料也可以繼續添加鎖（沒衝突的話）
+但無法修改資料，直到狀態確認或結束
+
+* for update
+排他鎖：
+其他session不能讀取資料也不能繼續添加鎖
+也無法修改資料，直到狀態確認或結束
+
+LIMIT : SELECT, DELETE ,(UPDATE)老師版本
+
+ORDER BY : SELECT, UPDATE DELETE
+
+![](https://i.imgur.com/NoVlvGD.png)
+
+### 備份
+
+還原
+```sql
+load data infile '路徑'
+  ignore或replace
+  into table 資料表名稱
+  fields terminated by ',' optionally enclosed by '"'
+  LINES TERMINATED BY '\r\n';
+```
+
+#### replace
+同編號用後面的覆蓋將前面的delete
+
+#### ignore
+同編號將後面的skip
+
+用逗號分隔欄位
+```sql
+fields terminated by ','
+```
+欄位用雙引號包起來
+```sql
+optionally enclosed by '"'
+```
+分行
+```sql
+LINES TERMINATED BY '\r\n';
+```
+
+
+
+mysqldump 
+
+ＨＷ：CY(中佑)建立訂便當的系統(菜單 會員 訂單 廠商 ) 給大家吃老衲的(大)棒棒 蟲子就不要出來丟人現眼了
+
+建立資料庫 建立資料表 等等 想加啥課堂上教的都可
+1
 ### 參考資料
 [50題 練習題１](https://kknews.cc/zh-tw/code/5nny5b2.html)
 
@@ -664,11 +828,43 @@ table_priv ：紀錄使用者對特定表內操作的權限
 
 [SQL筆記](https://github.com/bfsz/SQLNote)
 
+[JS(下禮拜連結)](https://hackmd.io/@alanwang1207/js)
+
 [PHP](https://hackmd.io/@alanwang1207/php)
 
 [前端大神github](https://github.com/Dent24/Toby_YUAN)
 
+[前端大神github(cy)](https://github.com/Toby-Yuan)
+
 [repo](https://github.com/alanwang1207/note)
 
 [MD語法](https://hackmd.io/@emisjerry/ByMQ0rWIB?type=slide#/)
+
+[切版教學（施工中）](https://toby-yuan.github.io/HTML-CSS/)
     
+
+
+EXPORT資料庫:<br>
+cd /applications/mamp/library/bin
+
+./mysqldump -u root -p root --databases northwind > /Users/cy0001210/Documents/test.txt 
+
+
+
+https://app.diagrams.net/#Hesther-lin069%2Fcyc-homework%2Fmaster%2F0807-db_design%2Fcy_lunch_system
+借我丟一下ＵＭＬ
+
+
+create table orders
+(
+  orderId int auto_increment primary key,
+  memberId int,
+  bendonId int,
+  price int NOT NULL,
+  CONSTRAINT memberId foreign key (memberId) references member (memberId)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE,
+  CONSTRAINT bendonId foreign key (bendonId) references bendon (bendonId)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE
+);
