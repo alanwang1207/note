@@ -98,6 +98,101 @@ $x = ++$y // $y++ ,$x=$y 先加再給值
 (條件a & 條件b)  //條件a不符合 仍執行條件b
 ```
 
+***
+#### session
+`session_start()`<br>
+如果要使用session都必須要有這句做啟動
+
+session Data存於伺服器端，使用者透過提交session ID讓server端提取對應的資料
+
+#### cookies
+cookies存於用戶端，可用於存放session ID等<br>
+缺點是容易被竄改
+
+[session vs cookies](https://medium.com/tsungs-blog/day14-session與cookie差別-eb7b4035a382)
+#### exit
+`exit($status)`<br>
+中止腳本的執行，如果沒有status參數要傳入，可以省略括號
+```php
+header("Location: $url")
+exit;
+```
+[exit](https://www.php.net/exit)
+
+#### 字串處理
+
+* `strlen()` 字串長度，在utf8編碼下中文字佔三個長度 
+    * `mb_strlen( string, "string encoding" )` 加上編碼判斷 
+
+<br>
+
+* `strpos($字串,x,y)`從第一個y開始尋找x(y沒定義就是從頭找)
+```php
+$s="012345671289";
+//    ^從這個往後找
+$pos=strpos($s,"12",2); //8
+--
+$pos=strpos($s,"xxx"); //false 
+找不到值會傳回 boolean   //(echo gettype $(pos))
+```
+如果查詢到某值的位置為０,該值會被php判斷成false，解決辦法：`!== false`
+```php
+$s = "012345671289";
+    $pos = strpos($s,"012");
+    
+    if($pos !== false){
+        echo("found: $pos"); //found:0
+    }
+    
+    else{
+        echo("Not Found");
+    }
+```
+[查詢字符串第一次出現的位置](https://stockwfj3.pixnet.net/blog/post/66773997) 
+
+<br>
+
+* `substr($字串,x,y)`從第x個字取y個
+```php
+$s="01234567";
+$result=substr($s,3,4);
+echo $result;
+//3456
+```
+* `str_reaplace("x","y",$字串)` 把字串裡的x替換成y
+```php
+$s="01234567";
+$result=str_replace("12","-",$s);
+echo $result;
+//0-34567
+```
+
+### function
+* `func_get_args()` 可變長度參數的函數
+* 以字串間接呼叫function
+```php
+$p = "test";
+echo $p($x); //相當於呼叫 test($x)函數;
+```
+* function無法讀到function以外的全域變數，除非使用 global
+* 如果在function內使用未宣告的全域變數，會自動產生該全域變數，其他的function必須使用global才能使用該變數
+
+
+```php=
+$a = 20;
+
+function myfunction($b) {
+    print "a=$a"; // '',$a於function內未被定義
+	$a = 30;
+	print "a=$a"; // 30
+	global $a, $c;// $c在這裡被定義為全域變數
+	print "a=$a"; // 20
+	return $c = ($b + $a);
+}
+print myfunction(40) + $c; //60+60=120
+```
+
+
 
 ## 框架
 laravel sympfony
@@ -105,4 +200,14 @@ laravel sympfony
 ## 參考資料
 [php筆記](https://hackmd.io/@ETC/BJppieP8z)
 
-哇今天好準時<3 可能老師餓了
+
+
+
+
+
+ 睡 都睡
+澳門首家線上賭場上線囉～
+⠄⠄⠄⠄⠄⠄⠄⠄⢀⣀⣤⣤⣤⣤⣤⣤⣤⣀⣀⠄⠄⠄⠄⠄⠄⠄⠄ ⠄⠄⠄⠄⠄⠄⢠⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⡀⠄⠄⠄⠄ ⠄⠄⠄⠄⠄⣰⣿⣿⡟⠻⣿⠟⠻⣿⣿⠛⢻⣿⡿⠻⣿⣿⣿⣦⡀⠄⠄ ⠄⠄⠄⠄⣰⣿⡿⠋⠤⢤⡉⢰⡀⡈⢁⠄⠄⣙⡁⢀⡘⢿⢿⣿⣿⡄⠄ ⠄⠄⠄⢠⣿⣿⠁⠄⠄⠄⢳⡀⢉⡀⣼⠄⠄⢨⠞⠉⠄⣀⡀⢿⣿⣿⠄ ⠄⠄⣠⣼⣿⠇⠄⢀⡴⣒⢲⣷⠲⠇⠻⢧⣴⣿⢺⡙⣦⡌⠁⠄⣿⣿⣇ ⠄⡞⠁⠄⡼⠄⠄⢹⡧⣉⠊⡟⠂⠄⠄⠄⠈⡇⣏⡷⣸⠁⠄⠄⢹⣿⢡ ⠄⡇⠄⡀⠃⠄⠄⠄⠃⠩⠘⠂⢖⣛⠙⡦⠐⠛⠬⠕⠛⠃⠄⠄⠘⠃⢾ ⠄⠳⣴⠃⠈⠚⠄⢠⠄⠄⠄⠄⠄⣹⣉⣀⣀⠄⠄⠄⡀⢢⣠⠄⠄⠄⡀ ⠄⠄⡟⠄⠄⠄⠄⠘⢦⡤⠤⠖⠋⠉⠄⠄⠉⠉⠙⠲⡌⠃⠁⠄⠄⠄⣿ ⠄⠄⡇⠄⠄⠄⢆⡄⢸⣇⣠⠖⠚⠩⠟⠉⠉⠙⠓⢢⡇⠄⠄⠄⠄⠄⣿ ⠄⠄⡇⠄⠄⠄⠈⠄⠄⠙⢤⣤⠤⠖⠒⡒⠒⠒⠚⠁⠄⠐⡄⡀⠄⢀⡇ ⠄⠄⢹⡀⠄⠄⠄⠄⠄⠄⠄⠄⠄⠈⠉⠁⠄⠄⠄⠄⠄⠄⠉⠠⢆⡞⠄ ⠄⠄⠄⠱⣄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢀⣠⠴⠋⠄⠄ ⠄⠄⠄⠄⠈⠓⠒⠒⠒⠒⠒⠒⠛⠉⠉⠉⠉⠉⠉⠉⠉⠉⠄⠄⠄⠄
+dinbendon 留言處去看看 xD
+小夫 我要進來嘍
+
