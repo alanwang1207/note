@@ -75,15 +75,16 @@ foreach ($season as $key => $value){
 
 #### 陣列排序
 
-| 指令     | 意義                         |
-| -------- | --------------------------- |
-| sort()   | 以升序對索引陣列排序           |
-| rsort()  | 以降序對索引陣列排序           |
-| asort()  | 根據值，以升序對關聯陣列排序     |
-| ksort()  | 根據鍵，以升序對關聯陣列排序     |
-| arsort() | 根據值，以降序對關聯陣列排序     |
-| krsort() | 根據鍵，以降序對關聯陣列排序     |
-| natsort  | 自然順序算法對給定數組中的元素排序|
+| 指令      | 意義                                           |
+| -------- | ---------------------------                    |
+| sort()   | 以升序對索引陣列排序(字串排列)                      |
+| rsort()  | 以升序對索引陣列排序                              |
+| usort()  | 以自訂function排序陣列值 usort($array,"funName")   | 
+| asort()  | 根據值，以升序對關聯陣列排序                        |
+| ksort()  | 根據鍵，以升序對關聯陣列排序                        |
+| arsort() | 根據值，以降序對關聯陣列排序                        |
+| krsort() | 根據鍵，以降序對關聯陣列排序                        |
+| natsort  | 自然順序算法對給定數組中的元素排序                   |
 
 ### 定義常數
 #### define
@@ -211,6 +212,8 @@ echo $result;
 //0-34567
 ```
 
+* `htmlspecialchars($string)` 將字串中HTML符號變成不可執行的文字符 <資安
+
 ### function
 * `func_get_args()` 可變長度參數的函數
 * 以字串間接呼叫function
@@ -238,9 +241,42 @@ function myfunction($b) {
 print myfunction(40) + $c; //60+60=120
 ```
 
+### 讀寫檔案
+
+* opendir：
+* readdir：
+* closedir：
+
+* file_put_contents：
+* move_uploaded_file：
+* fopen：
+* fread：
+* fputs：
+* fgets：
+
+
 
 ## 框架
 laravel sympfony
 
 ## 參考資料
 [php筆記](https://hackmd.io/@ETC/BJppieP8z)
+
+[兔子吃肉](https://kknews.cc/zh-tw/news/q4qjy3o.html)
+
+[filesystem函數](https://www.w3school.com.cn/php/php_ref_filesystem.asp)
+
+
+後面有主管 他出去了 我操 我以為還在 我透過螢幕反射就看得到他ㄌ mac大螢幕的威力 不像什麼華碩 這品質反射到扭曲 還好啊他都在用自己的電腦
+感覺這個沒看過 有點老？！
+好險後面有埋眼
+大 大佬！
+真”主管
+
+有 這位上次出題目給我 
+我操 感覺變老許多
+
+
+公司再不復工 他就會發現沒有我也能正常運轉了
+
+那是有地區性問題 寵物兔的確不會吃肉 但是會吃大便
