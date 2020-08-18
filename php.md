@@ -32,15 +32,59 @@ echo 'foo is $foo\n'; // 結果: foo is $foo\n
 
 $YesNo = TRUE
 
-0與"0" => FALSE
-1與"1" => TRUE
+0與"0" => FALSE <br>
+1 與"1" => TRUE
 
 
 #### TimeStamp（時間戳記）
 ```php
 <?= date("Y-y-M-m-D-d"); ?>
 //2020-20-Aug-08-Mon-17
+
 ```
+
+#### array
+定義方法：
+```php
+$bloodType[] = 'A';
+$bloodType[] = 'B'; 
+或
+$bloodType = array('A', 'B');
+或
+$bloodType = ['A','B'];
+
+$變數名稱[ num ] = value
+$變數名稱 = array('key' => value)
+$變數名稱['key'] = value //key為字串
+
+ex: $myArray['myName'] = 'Jeremy' 或 $myArray = array('myName'=>'Jeremy');
+    echo "Hello! My name is ".$myArray['myName']
+//輸出=>Hello! My name is Jeremy;
+
+可使用var_dump 或 print_r 檢視陣列或物件內容
+```
+#### foreach
+foreach( 陣列 as 變數名稱 )
+將陣列內容一個一個讀進變數名稱
+
+```php
+foreach ($season as $key => $value){
+	echo $key, "=>", $value;
+}
+```
+
+#### 陣列排序
+
+| 指令     | 意義                         |
+| -------- | --------------------------- |
+| sort()   | 以升序對索引陣列排序           |
+| rsort()  | 以降序對索引陣列排序           |
+| asort()  | 根據值，以升序對關聯陣列排序     |
+| ksort()  | 根據鍵，以升序對關聯陣列排序     |
+| arsort() | 根據值，以降序對關聯陣列排序     |
+| krsort() | 根據鍵，以降序對關聯陣列排序     |
+| natsort  | 自然順序算法對給定數組中的元素排序|
+
 ### 定義常數
 #### define
 `define()`函式宣告常數,常數能是數值的值，包括布林、整數、浮點數和字串，雖然也可以設為資源，但有可能會出現問題。
@@ -106,7 +150,7 @@ $x = ++$y // $y++ ,$x=$y 先加再給值
 session Data存於伺服器端，使用者透過提交session ID讓server端提取對應的資料
 
 #### cookies
-cookies存於用戶端，可用於存放session ID等<br>
+cookies存於用戶端，可用於存放session ID.帳密等資料<br>
 缺點是容易被竄改
 
 [session vs cookies](https://medium.com/tsungs-blog/day14-session與cookie差別-eb7b4035a382)
@@ -178,6 +222,8 @@ echo $p($x); //相當於呼叫 test($x)函數;
 * 如果在function內使用未宣告的全域變數，會自動產生該全域變數，其他的function必須使用global才能使用該變數
 
 
+
+
 ```php=
 $a = 20;
 
@@ -193,21 +239,8 @@ print myfunction(40) + $c; //60+60=120
 ```
 
 
-
 ## 框架
 laravel sympfony
 
 ## 參考資料
 [php筆記](https://hackmd.io/@ETC/BJppieP8z)
-
-
-
-
-
-
- 睡 都睡
-澳門首家線上賭場上線囉～
-⠄⠄⠄⠄⠄⠄⠄⠄⢀⣀⣤⣤⣤⣤⣤⣤⣤⣀⣀⠄⠄⠄⠄⠄⠄⠄⠄ ⠄⠄⠄⠄⠄⠄⢠⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⡀⠄⠄⠄⠄ ⠄⠄⠄⠄⠄⣰⣿⣿⡟⠻⣿⠟⠻⣿⣿⠛⢻⣿⡿⠻⣿⣿⣿⣦⡀⠄⠄ ⠄⠄⠄⠄⣰⣿⡿⠋⠤⢤⡉⢰⡀⡈⢁⠄⠄⣙⡁⢀⡘⢿⢿⣿⣿⡄⠄ ⠄⠄⠄⢠⣿⣿⠁⠄⠄⠄⢳⡀⢉⡀⣼⠄⠄⢨⠞⠉⠄⣀⡀⢿⣿⣿⠄ ⠄⠄⣠⣼⣿⠇⠄⢀⡴⣒⢲⣷⠲⠇⠻⢧⣴⣿⢺⡙⣦⡌⠁⠄⣿⣿⣇ ⠄⡞⠁⠄⡼⠄⠄⢹⡧⣉⠊⡟⠂⠄⠄⠄⠈⡇⣏⡷⣸⠁⠄⠄⢹⣿⢡ ⠄⡇⠄⡀⠃⠄⠄⠄⠃⠩⠘⠂⢖⣛⠙⡦⠐⠛⠬⠕⠛⠃⠄⠄⠘⠃⢾ ⠄⠳⣴⠃⠈⠚⠄⢠⠄⠄⠄⠄⠄⣹⣉⣀⣀⠄⠄⠄⡀⢢⣠⠄⠄⠄⡀ ⠄⠄⡟⠄⠄⠄⠄⠘⢦⡤⠤⠖⠋⠉⠄⠄⠉⠉⠙⠲⡌⠃⠁⠄⠄⠄⣿ ⠄⠄⡇⠄⠄⠄⢆⡄⢸⣇⣠⠖⠚⠩⠟⠉⠉⠙⠓⢢⡇⠄⠄⠄⠄⠄⣿ ⠄⠄⡇⠄⠄⠄⠈⠄⠄⠙⢤⣤⠤⠖⠒⡒⠒⠒⠚⠁⠄⠐⡄⡀⠄⢀⡇ ⠄⠄⢹⡀⠄⠄⠄⠄⠄⠄⠄⠄⠄⠈⠉⠁⠄⠄⠄⠄⠄⠄⠉⠠⢆⡞⠄ ⠄⠄⠄⠱⣄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢀⣠⠴⠋⠄⠄ ⠄⠄⠄⠄⠈⠓⠒⠒⠒⠒⠒⠒⠛⠉⠉⠉⠉⠉⠉⠉⠉⠉⠄⠄⠄⠄
-dinbendon 留言處去看看 xD
-小夫 我要進來嘍
-
