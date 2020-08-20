@@ -155,6 +155,7 @@ cookies存於用戶端，可用於存放session ID.帳密等資料<br>
 缺點是容易被竄改
 
 [session vs cookies](https://medium.com/tsungs-blog/day14-session與cookie差別-eb7b4035a382)
+[session vs cookie](https://ithelp.ithome.com.tw/articles/10157724)
 #### exit
 `exit($status)`<br>
 中止腳本的執行，如果沒有status參數要傳入，可以省略括號
@@ -224,7 +225,7 @@ echo $p($x); //相當於呼叫 test($x)函數;
 * function無法讀到function以外的全域變數，除非使用 global
 * 如果在function內使用未宣告的全域變數，會自動產生該全域變數，其他的function必須使用global才能使用該變數
 
-
+php中的方法及類別不分大小寫
 
 
 ```php=
@@ -243,21 +244,121 @@ print myfunction(40) + $c; //60+60=120
 
 ### 讀寫檔案
 
-* opendir：
-* readdir：
-* closedir：
+* opendir：打開一個目錄
+* readdir：返回由opendir() 打開的目錄中的文件名稱
+* closedir：關閉由 opendir() 函數打開的目錄
+* file_put_contents：快速寫入檔案
+* move_uploaded_file：將上傳的檔案移動到新位置
+* fopen：打開文件或者URL
+* fread：讀取文件
+* fwrite/fputs：寫入文件
+* fgets：從文件指針中讀取一行
+* htmlspecialchars:轉換HTML 特殊符號為僅能顯示用的編碼
 
-* file_put_contents：
-* move_uploaded_file：
-* fopen：
-* fread：
-* fputs：
-* fgets：
+### Class
+```php
+Class Animal{
+        public $price;        
+        private $_weight;
+}
+```
+
+#### __construct(建構子) 
+一旦宣告後就直接執行,經常會用來執行必要動作
+
+#### __destruct(解構子)
+這個類別執行結束之後再執行 __destruct 內的動作,經常拿來執行收尾的工作
+
+[interface和implements](https://codertw.com/%E7%A8%8B%E5%BC%8F%E8%AA%9E%E8%A8%80/242253/)
+
+### 資料庫
+#### 連接資料庫 
+```php
+$link = mysqli_connect("host","user","password","database","port","socket")
+or die(mysqli_connect_error());
+
+mysqli_query($link, "set names utf8");
+mysqli_select_db($link, "資料庫");
+
+//可在mysql_connect前加＠可用來停用錯誤訊息
+```
+#### 關閉連接
+```php
+mysqli_close($link)
+```
+#### 選取資料表資料
+```php
+$sql = "select * from 資料表";
+$result = mysqli_query($link, $sql);
+```
+#### 顯示查詢結果
+```php
+mysqli_fetch_assoc($result) //使用資料庫欄位取值
+echo "ID：{$row['cID']}";
+
+mysqli_fetch_row($result)   //使用數字索引取值
+echo "ID：{$row[0]}";
+
+mysqli_fetch_array()
+
+mysqli_fetch_object()
+
+```
+#### 查詢筆數
+```php
+mysql_num_rows($result)
+```
+
+
+### MVC架構
+* model：對資料庫的存取，異動，檢查
+* view:視圖，前端畫面
+* controller：路由，流程控制
+![](https://i.imgur.com/aD6K8ZG.png)
+
+### .htaccess (路由設定檔)
+```
+RewriteEngine on
+//找尋檔案中的file跟directory 
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+//找不到的由瀏覽器來處理
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+```
+.htaccess跟Apache共同工作完成一次路徑的解析
+
+### curl
+
+* curl_init() 建立curl連線
+* curl_setopt() 設定擷取的url網址
+* curl_exec()
+* curl_close() 關閉curl連線
+
+
+```php
+$_SERVER['HTTP_HOST']：當前請求的Host頭中的內容(與取得Server的Port)
+$_SERVER['SERVER_NAME']：當前運行網頁檔案所在的主機名稱
+$_SERVER['REQUEST_URI']：訪問此頁面需要的URL
+$_SERVER['PHP_SELF']：當前正在執行的網頁檔案名稱
+$_SERVER['QUERY_STRING']：查詢的變數值
+```
 
 
 
-## 框架
-laravel sympfony
+# 作業
+
+會員系統(session)：
+首頁 會員頁 登入頁<br> 
+登入 登出 
+
+trim() 清除字串前後空白
+
+電特多做
+1.MVC版本 
+2.laravel版本
+3.Lab_REST_API 全部做一遍 截圖
+
+<hr>
 
 ## 參考資料
 [php筆記](https://hackmd.io/@ETC/BJppieP8z)
@@ -267,16 +368,36 @@ laravel sympfony
 [filesystem函數](https://www.w3school.com.cn/php/php_ref_filesystem.asp)
 
 
-後面有主管 他出去了 我操 我以為還在 我透過螢幕反射就看得到他ㄌ mac大螢幕的威力 不像什麼華碩 這品質反射到扭曲 還好啊他都在用自己的電腦
-感覺這個沒看過 有點老？！
-好險後面有埋眼
-大 大佬！
-真”主管
 
-有 這位上次出題目給我 
-我操 感覺變老許多
+## 框架(laravel sympfony)
 
 
-公司再不復工 他就會發現沒有我也能正常運轉了
+拉for
+卑鄙源之助
+轟隆隆隆隆隆隆隆隆隆隆隆隆 衝衝衝衝
 
-那是有地區性問題 寵物兔的確不會吃肉 但是會吃大便
+引擎發動
+
+拉風
+
+我是今夜最稀有品種
+
+重點是那三個女生不會跟我在一起
+
+哈利波特經典鮑
+
+我還沒看哈利波特
+
+浪漫DUKE 帶你找回屬於你的浪漫 浪漫突進
+
+ありがとう　神様
+
+熟人都叫我 東太平洋 漁場時價分析師 兼操盤手
+
+暨洋流講師 海龍王彼得
+
+邱喔
+
+
+
+
