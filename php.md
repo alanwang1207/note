@@ -351,13 +351,28 @@ $_SERVER['QUERY_STRING']：查詢的變數值
 首頁 會員頁 登入頁<br> 
 登入 登出 
 
+[session 設定時間](https://stackoverflow.com/questions/520237/how-do-i-expire-a-php-session-after-30-minutes)
+
+[session 設定時間](https://blog.longwin.com.tw/2008/10/php-
+-session-expire-time-2008/)
+
 trim() 清除字串前後空白
 
+:::info
 電特多做
 1.MVC版本 
 2.laravel版本
 3.Lab_REST_API 全部做一遍 截圖
+:::
 
+電特加油～我們就靠你惹
+加油！！ :heart_eyes: 
+
+(????
+有點想睡 超級想睡
+
+傘電！！！
+flash man <- Barry Allen 好看
 <hr>
 
 ## 參考資料
@@ -372,31 +387,6 @@ trim() 清除字串前後空白
 ## 框架(laravel sympfony)
 
 
-拉for
-卑鄙源之助
-轟隆隆隆隆隆隆隆隆隆隆隆隆 衝衝衝衝
-
-引擎發動
-
-拉風
-
-我是今夜最稀有品種
-
-重點是那三個女生不會跟我在一起
-
-哈利波特經典鮑
-
-我還沒看哈利波特
-
-浪漫DUKE 帶你找回屬於你的浪漫 浪漫突進
-
-ありがとう　神様
-
-熟人都叫我 東太平洋 漁場時價分析師 兼操盤手
-
-暨洋流講師 海龍王彼得
-
-邱喔
 
 
 
